@@ -14,6 +14,7 @@ import {
 } from '../../../admin/client/App/elemental';
 import FileChangeMessage from '../../components/FileChangeMessage';
 import HiddenFileInput from '../../components/HiddenFileInput';
+import ImageThumbnail from '../../components/ImageThumbnail';
 
 let uploadInc = 1000;
 
@@ -57,6 +58,15 @@ module.exports = Field.create({
 			this.setState(buildInitialState(nextProps));
 		}
 	},
+	getImageSource (height = 90) {
+		let src;
+		if (this.hasLocal()) {
+			src = this.state.dataUri;
+		} else if (this.hasExisting()) {
+			src = this.props.value.url;
+		}
+		return src;
+	},
 
 	// ==============================
 	// HELPERS
@@ -67,6 +77,15 @@ module.exports = Field.create({
 	},
 	hasExisting () {
 		return this.props.value && !!this.props.value.filename;
+	},
+	hasLocal () {
+		return !!this.state.userSelectedFile;
+	},
+	hasImageUrl () {
+		return !!this.props.value.url && this.props.value.mimetype === 'image/jpeg';
+	},
+	hasImage () {
+		return this.hasImageUrl() || this.hasLocal();
 	},
 	getFilename () {
 		return this.state.userSelectedFile
@@ -190,6 +209,55 @@ module.exports = Field.create({
 			return null;
 		}
 	},
+	renderImagePreview () {
+		const { value } = this.props;
+
+		// render icon feedback for intent
+		let mask;
+		if (this.hasLocal()) mask = 'upload';
+		else if (this.state.removeExisting) mask = 'remove';
+		else if (this.state.loading) mask = 'loading';
+
+		const shouldOpenLightbox = value.format !== 'pdf';
+
+		return (
+			<ImageThumbnail
+				component="a"
+				href={this.props.value.url}
+				onClick={shouldOpenLightbox && this.openLightbox}
+				mask={mask}
+				target="__blank"
+				style={{ float: 'left', marginRight: '1em' }}
+			>
+				<img src={this.getImageSource()} style={{ height: 90 }} />
+			</ImageThumbnail>
+		);
+	},
+	renderFileNameAndOptionalMessage (showChangeMessage = false) {
+		return (
+			<div>
+				{this.hasImage() ? (
+					<FileChangeMessage>
+						{this.getFilename()}
+					</FileChangeMessage>
+				) : null}
+				{showChangeMessage && this.renderChangeMessage()}
+			</div>
+		);
+	},
+	renderLightbox () {
+		const { value } = this.props;
+		if (!value || !Object.keys(value).length) return;
+
+		return (
+			<Lightbox
+				images={[this.getImageSource(600)]}
+				currentImage={0}
+				isOpen={this.state.lightboxIsVisible}
+				onClose={this.closeLightbox}
+			/>
+		);
+	},
 	renderUI () {
 		const { label, note, path } = this.props;
 		const buttons = (
@@ -200,10 +268,16 @@ module.exports = Field.create({
 				{this.hasFile() && this.renderClearButton()}
 			</div>
 		);
+		const imageContainer = (
+			<div style={this.hasImage() ? { marginBottom: '1em' } : null}>
+				{this.hasImage() && this.renderImagePreview()}
+			</div>
+		);
 
 		return (
 			<div data-field-name={path} data-field-type="file">
 				<FormField label={label} htmlFor={path}>
+					{imageContainer}
 					{this.shouldRenderField() ? (
 						<div>
 							{this.hasFile() && this.renderFileNameAndChangeMessage()}
