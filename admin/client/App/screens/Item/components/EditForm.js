@@ -383,7 +383,7 @@ var EditForm = React.createClass({
 					</Grid.Col>
 					<Grid.Col large="one-quarter"><span /></Grid.Col>
 				</Grid.Row>
-				{(this.props.list.key.indexOf('TaskType') > -1) ? <a target="_blank" href={'/#/sample/' + this.props.list.singular.substr(8) + '/' + this.props.data['id']}>Test page</a> : null}
+				{(this.props.list.key.indexOf('TaskType') > -1) ? <a target="_blank" href={'/#/sample/' + this.props.list.key.substr(8) + '/' + this.props.data['id']}>Test page</a> : null}
 				{this.renderFooterBar()}
 				<ConfirmationDialog
 					confirmationLabel="Reset"
