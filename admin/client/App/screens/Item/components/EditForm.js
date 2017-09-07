@@ -368,10 +368,14 @@ var EditForm = React.createClass({
 			</div>
 		) : null;
 	},
+	renderTaskTypeLink() {
+		return (this.props.list.key.indexOf('TaskType') > -1) ? <a target="_blank" href={'/#/sample/' + this.props.list.key.substr(8) + '/' + this.props.data['id']}>Test page</a> : null;
+	},
 	render () {
 		return (
 			<form ref="editForm" className="EditForm-container">
 				{(this.state.alerts) ? <AlertMessages alerts={this.state.alerts} /> : null}
+				{this.renderTaskTypeLink()}
 				<Grid.Row>
 					<Grid.Col large="three-quarters">
 						<Form layout="horizontal" component="div">
@@ -383,7 +387,7 @@ var EditForm = React.createClass({
 					</Grid.Col>
 					<Grid.Col large="one-quarter"><span /></Grid.Col>
 				</Grid.Row>
-				{(this.props.list.key.indexOf('TaskType') > -1) ? <a target="_blank" href={'/#/sample/' + this.props.list.key.substr(8) + '/' + this.props.data['id']}>Test page</a> : null}
+				{this.renderTaskTypeLink()}
 				{this.renderFooterBar()}
 				<ConfirmationDialog
 					confirmationLabel="Reset"
