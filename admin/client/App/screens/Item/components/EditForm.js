@@ -257,7 +257,7 @@ var EditForm = React.createClass({
 	},
 	renderTaskSampleLink() {
 		var currentLoc = '';
-		if (window.location.indexOf('localhost') > -1) {
+		if (window.location.href.indexOf('localhost') > -1) {
 			currentLoc = 'http://localhost:4200';
 		}
 		return (this.props.list.key.indexOf('TaskType') > -1) ? <a target="_blank" href={ currentLoc + '/#/sample/' + this.props.list.key.substr(8) + '/' + this.props.data['id']}>Test page</a> : null;
