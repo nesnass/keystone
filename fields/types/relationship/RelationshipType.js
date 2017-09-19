@@ -222,8 +222,15 @@ relationship.prototype.updateItem = function (item, data, callback) {
 	}
 
 	var value = this.getValueFromData(data);
-	if (value === undefined) {
+	var itemOldValue = item.get(this.path);
+	if (value === undefined && itemOldValue && itemOldValue.length === 0) {
 		return process.nextTick(callback);
+	} else if (value === undefined) {
+		if (this.many) {
+			value = [];
+		} else {
+			value = '';
+		}
 	}
 
 	// Are we handling a many relationship or just one value?
